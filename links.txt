@@ -1,0 +1,2 @@
+http://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html
+http://www.lysator.liu.se/c/ANSI-C-grammar-y.html

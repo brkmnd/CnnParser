@@ -1,0 +1,5 @@
+__pychache__
+*.swp
+datasets/*.txt
+datasets/*.c
+*.ptm
