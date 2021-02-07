@@ -27,15 +27,15 @@ def enforce_reproducibility(seed=42):
 enforce_reproducibility()
 
 class CnnModel(nn.Module):
-    def __init__(self,vocab_size,emb_dim,lstm_dim):
+    def __init__(self,vocab_size,emb_dim,lstm_dim,n_layers,dropout_p,bi_dir):
         super(CnnModel,self).__init__()
 
-        self.n_layers = 1
+        self.n_layers = n_layers
         self.lstm_dim = lstm_dim
 
         #layers
         self.emb = nn.Embedding(vocab_size,emb_dim)
-        self.lstm = nn.LSTM(emb_dim,lstm_dim)
+        self.lstm = nn.LSTM(emb_dim,lstm_dim,n_layers,dropout=dropout_p)
         self.lin_trans = nn.Linear(lstm_dim,vocab_size)
 
     def forward(self,inputs,hiddens):
@@ -57,7 +57,10 @@ def get_model(load_model,model_data,vocab_size):
     lstm_dim = model_data["lstm_dim"]
     emb_dim = model_data["emb_dim"]
     model_name = model_data["model_name"]
-    model = CnnModel(vocab_size,emb_dim,lstm_dim)
+    dropout_p = model_data["dropout"]
+    bi_dir = model_data["bi-directional"]
+    n_layers = model_data["n_layers"]
+    model = CnnModel(vocab_size,emb_dim,lstm_dim,n_layers,dropout_p,bi_dir)
     if load_model:
         model_name += ".ptm"
         model.load_state_dict(ts.load(model_name))
@@ -152,18 +155,31 @@ if ts.cuda.is_available():
     device = ts.device("cuda")
 
 model_dict = {
-        "m1": {
+          "m1": {
               "lstm_dim":1024
+            , "n_layers":1
             , "emb_dim":128
             , "model_name":"cnn_model1"
             , "batch_size":1
+            , "dropout":0
+            , "bi-directional":False
+            }
+        , "m2": {
+              "lstm_dim":256
+            , "n_layers":2
+            , "emb_dim":128
+            , "model_name":"cnn_model2"
+            , "batch_size":1
+            , "dropout":0.1
+            , "bi-directional":False
             }
         }
+
+m0 = model_dict["m2"]
 
 def complete_me(input_txt,n_sugs):
     from lexer import lex
 
-    m0 = model_dict["m1"]
     model_name = m0["model_name"]
     b_size = m0["batch_size"]
     tok_start = "<s>"
@@ -174,18 +190,23 @@ def complete_me(input_txt,n_sugs):
     model = get_model(True,m0,vocab_size)
     model.eval()
     hiddens = model.init_hiddens(b_size,device)
+
+    res = []
+
     with ts.no_grad():
         xs = [tok_start] + lex(input_txt)
-        for x in xs:
+        x0 = concat_tokens([xs[-1]],word2id,device)
+        for x in xs[:-1]:
+            # initialize hidden states on inputs src
             x = concat_tokens([x],word2id,device)
-            
-            preds,hiddens = model(x,hiddens)
-            preds = np.array(preds.tolist()).reshape(vocab_size)
-            n_preds = preds.argsort()[:n_sugs]
-            print(n_preds)
+            _,hiddens = model(x,hiddens)
+        
+        preds,_ = model(x0,hiddens)
+        preds = np.array(preds.tolist()).reshape(vocab_size)
+        n_preds = np.flip(preds.argsort())[:n_sugs]
+        res = [id2word[i] for i in n_preds]
 
-            break
-        #inputs = concat_tokens(tok_start + input_txt)
+    return res
 
 def save_model(model_name,model):
     model_name += ".ptm"
@@ -194,19 +215,17 @@ def save_model(model_name,model):
 
 
 def main():
-    m0 = model_dict["m1"]
-
     txts = load_data()
     txts_train = txts[:150]
     txts_test = txts[150:200]
 
-    n_epochs = 3
+    n_epochs = 2
     load_model = True
     model_name = m0["model_name"]
 
     l_rate = 1 / 10 ** 5
     seq_len = 128
-    n_splits = 5
+    n_splits = 8
     b_size = m0["batch_size"]
 
     seqs = create_seqs_splits(txts_train,seq_len,n_splits)
@@ -259,9 +278,13 @@ def main():
         print("accuracy       : " + str(acc))
         print("took           : " + comp_time(start_time,lambda x: x))
 
+def do_sugs():
+    src = "#include <stdio.h> int main()"
+    sugs = complete_me(src,5)
+    print("")
+    print(sugs)
 
 if __name__ == "__main__":
     main()
-    #sugs = complete_me("int main()",5)
-    #print(sugs)
+    #do_sugs()
     

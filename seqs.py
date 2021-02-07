@@ -30,10 +30,46 @@ def compile_seqs(txts,seq_len):
 
     return xs,ys
 
+def evenout_splits(txts):
+    lens = np.array([len(x) for x in txts])
+    max_len = lens[lens.argmax()]
+    lens_ids = lens.argsort()
+
+    # slice lens into res_ids of ids
+    # where len(txts[id]) sums to ~ max_len
+    res_ids = []
+    int_res = []
+    int_sum = 0
+    for i in lens_ids:
+        int_sum += lens[i]
+        int_res.append(i)
+        if int_sum >= max_len:
+            res_ids.append(int_res)
+            int_sum = 0
+            int_res = []
+
+    # look up ids in res_ids
+    # and flatten into res, the new version txts
+    res = []
+    for ids in res_ids:
+        res0 = []
+        for i in ids:
+            res0 = res0 + txts[i]
+        res.append(res0)
+    
+    # res should now contain lists of tokens
+    # where the total amount of tokens is the same
+    # as the total amount in org txts
+    if sum([1 for xs in txts for x in xs]) != sum([len(x) for x in res]):
+        print("warning: evenout split went wrong")
+
+    return res
+
 def create_splits(txts,seq_len,n_splits):
     # returns a list of seq_train,seq_val
     # this list composes of cross-split combination
     # for example ([1,2],[3]) , ([1,3],[2]) , ([2,3],[1])
+    txts = evenout_splits(txts)
     n_txts = len(txts)
     split_len = n_txts // n_splits
     if n_txts % n_splits == 0:
