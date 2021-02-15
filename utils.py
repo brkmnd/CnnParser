@@ -28,8 +28,16 @@ def comp_time(t0,time_fun):
     used_time = round(used_time,2)
     return str(used_time) + " " + measure
 
-def save_acc(model_name,n_epochs,acc):
+def save_acc(model_name,n_epochs,acc,acc3):
     with open(model_name + ".acc.txt","a") as f:
-        res = "[" + str(n_epochs) + "] : " + str(acc) + "\n"
+        res  = "*" * 8 + "\n"
+        res += "[" + str(n_epochs) + "] : " + str(acc) + "\n"
+        res += "[" + str(n_epochs) + "]3: " + str(acc3) + "\n"
         f.write(res)
+
+def load_initcode(fname):
+    res = ""
+    with open("init_code/" + fname,"r") as f:
+        res = f.read()
+    return res
 

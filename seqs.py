@@ -89,6 +89,9 @@ def create_splits(txts,seq_len,n_splits):
 
     return res
 
+def reverse_seqs(seqs):
+    return np.flip(seqs,(0,1))
+
 def create_seqs_splits(txts,seqs_len,n_splits):
     return create_splits(txts,seqs_len,n_splits)
 
@@ -106,3 +109,10 @@ def create_vocab(txts):
     id2word = vocab
 
     return vocab,vocab_size,word2id,id2word
+
+if __name__ == "__main__":
+    a1 = [range(i,i+3) for i in range(0,10,3)]
+    a1 = np.array(a1)
+    print(a1)
+    b1 = reverse_seqs(a1)
+    print(b1)

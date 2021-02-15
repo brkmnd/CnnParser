@@ -1,5 +1,4 @@
-__pychache__
+__pycache__
 *.swp
 datasets/*.txt
 *.c
-*.ptm
