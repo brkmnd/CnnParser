@@ -41,7 +41,7 @@ def train_model(t_data,model,l_rate,b_size,word2id,device):
 
         for inputs,targets in zip(xs,ys):
             model.zero_grad()
-            # reset hiddens after each inputs since inputs = whole c-program
+            # reset hiddens after each input since input = whole c-program
             hiddens = model.init_hiddens(b_size,device)
 
             inputs = concat_tokens(inputs,word2id,device)
@@ -247,12 +247,15 @@ def main_evaltest(model,m0,vocab,seqs_test):
 def main():
     txts = load_data()
     txts_train = txts[:150]
-    txts_test = txts[150:200]
+    txts_test = txts[150:]
 
     m0 = model_dict["m4"]
     load_model = True
 
     n_splits = 10
+    n_datas = len(txts)
+    n_trains = len(txts_train)
+    n_tests = len(txts_test)
 
     seqs = create_seqs_splits(txts_train,n_splits)
     random.shuffle(seqs)
@@ -260,13 +263,19 @@ def main():
     vocab = create_vocab(txts)
     model = get_model(load_model,m0,vocab,device)
 
-    print("vocab size:" + str(vocab["size"]))
+    print("")
+    print("vocab size      : " + str(vocab["size"]))
+    print("dataset size    : " + str(n_datas))
+    print("train-set size  : " + str(n_trains))
+    print("test-set size   : " + str(n_tests))
+    print("train-set ratio : " + str(n_trains / n_datas))
+    print("")
     
-    main_train(model,m0,vocab,seqs,n_epochs=5,l_rate=1/10**5)
-    main_train(model,m0,vocab,seqs,n_epochs=5,l_rate=1/10**5)
     main_train(model,m0,vocab,seqs,n_epochs=5,l_rate=1/10**5)
     #main_evalsplit(model,m0,vocab,seqs)
     #main_evaltest(model,m0,vocab,seqs_test)
+
+    return True
 
 def do_complete():
     src = load_initcode("1.c")
