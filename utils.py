@@ -1,5 +1,21 @@
 import time
 import numpy as np
+import torch as ts
+import random
+
+def enforce_reproducibility(seed=42):
+    # Sets seed manually for both CPU and CUDA
+    ts.manual_seed(seed)
+    ts.cuda.manual_seed_all(seed)
+    # For atomic operations there is currently 
+    # no simple way to enforce determinism, as
+    # the order of parallel operations is not known.
+    # CUDNN
+    ts.backends.cudnn.deterministic = True
+    ts.backends.cudnn.benchmark = False
+    # System based
+    random.seed(seed)
+    np.random.seed(seed)
 
 def gen_rand_int(time_f):
     def run_tf():
@@ -13,6 +29,9 @@ def gen_rand_int(time_f):
         rand_i = run_tf()
 
     return rand_i
+
+def get_time():
+    return time.time()
 
 def comp_time(t0,time_fun):
     used_time = time_fun(round(time.time() - t0,2))
@@ -29,7 +48,7 @@ def comp_time(t0,time_fun):
     return str(used_time) + " " + measure
 
 def save_acc(model_name,n_epochs,acc,acc3):
-    with open(model_name + ".acc.txt","a") as f:
+    with open("models/" + model_name + ".acc.txt","a") as f:
         res  = "*" * 8 + "\n"
         res += "[" + str(n_epochs) + "] : " + str(acc) + "\n"
         res += "[" + str(n_epochs) + "]3: " + str(acc3) + "\n"

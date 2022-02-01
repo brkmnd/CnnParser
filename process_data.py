@@ -47,7 +47,7 @@ def search_in_files(needle):
 def process_data():
     path = "datasets"
     dirs = os.listdir(path)
-    res = ""
+    res = []
     for d in dirs:
         if d[-4:] in file_endings:
             continue
@@ -57,8 +57,9 @@ def process_data():
             p1 = p0 + "/" + f
             txt = fopen(p1)
             ts = lex(txt)
-            res += p1 + split_token + "<s>" + split_token + split_token.join(ts) + split_token + "</s>\n"
-    fsave(res)
+            if len(ts) <= 4000:
+                res.append(split_token.join(ts))
+    fsave("\n".join(res))
 
 def load_data():
     res = []
@@ -68,7 +69,7 @@ def load_data():
             if l == "":
                 continue
             ts = l.split(split_token)
-            res.append(ts[1:])
+            res.append(ts)
     return res
 
 if __name__ == "__main__":

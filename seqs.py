@@ -1,8 +1,11 @@
 import numpy as np
 
-tok_pad = "<pad>"
-tok_start = "<s>"
-tok_end = "</s>"
+toks = { "pad"   : "<pad>"
+       , "start" : "<s>"
+       , "end"   : "</s>"
+       , "unk"   : "<unk>"
+       , "eof"   : "<eof>"
+       }
 
 def find_split_sizes(n_txts):
     res = []
@@ -11,65 +14,27 @@ def find_split_sizes(n_txts):
             res.append(i)
     return res
 
-def compile_seqs(txts,seq_len):
-    # returns seqs xs,ys each of shape (*,seq_len)
-    # ys are equal to xs but rotated 1 pos to the right
-    # for example xs = [1,2,3,...] => ys = [2,3,4,...]
-    # pad tokens are added to the end to align
-    ts = [x for xs in txts for x in xs]
-    n_ts = len(ts)
-
-    res_len = n_ts % seq_len
-    ts = ts + [tok_pad] * (seq_len - res_len)
-
-    n_ts = len(ts)
-    xs = np.array(ts)
-    xs = xs.reshape(n_ts // seq_len,seq_len)
-    ys = np.array(ts[1:] + [tok_pad])
-    ys = ys.reshape(n_ts // seq_len,seq_len)
+def compile_seqs(txts):
+    # returns seqs xs,ys each of length len(txts)
+    # ys are xs but rotated 1 pos right:
+    # [1,2,3,4] -> [2,3,4,eof]
+    xs = []
+    ys = []
+    
+    for txt in txts:
+        xs.append(txt)
+        ys.append(txt[1:] + [toks["eof"]])
 
     return xs,ys
 
-def evenout_splits(txts):
-    lens = np.array([len(x) for x in txts])
-    max_len = lens[lens.argmax()]
-    lens_ids = lens.argsort()
-
-    # slice lens into res_ids of ids
-    # where len(txts[id]) sums to ~ max_len
-    res_ids = []
-    int_res = []
-    int_sum = 0
-    for i in lens_ids:
-        int_sum += lens[i]
-        int_res.append(i)
-        if int_sum >= max_len:
-            res_ids.append(int_res)
-            int_sum = 0
-            int_res = []
-
-    # look up ids in res_ids
-    # and flatten into res, the new version txts
-    res = []
-    for ids in res_ids:
-        res0 = []
-        for i in ids:
-            res0 = res0 + txts[i]
-        res.append(res0)
-    
-    # res should now contain lists of tokens
-    # where the total amount of tokens is the same
-    # as the total amount in org txts
-    if sum([1 for xs in txts for x in xs]) != sum([len(x) for x in res]):
-        print("warning: evenout split went wrong")
-
-    return res
-
-def create_splits(txts,seq_len,n_splits):
+def create_splits(txts,n_splits):
     # returns a list of seq_train,seq_val
     # this list composes of cross-split combination
     # for example ([1,2],[3]) , ([1,3],[2]) , ([2,3],[1])
-    txts = evenout_splits(txts)
+
+    # the structure of res is
+    #   split_id -> seqs_train,seqs_val
+    #   seqs_train : [xs,ys]
     n_txts = len(txts)
     split_len = n_txts // n_splits
     if n_txts % n_splits == 0:
@@ -82,8 +47,8 @@ def create_splits(txts,seq_len,n_splits):
     for si in range(0,n_txts,split_len):
         txts_val = txts[si:si + split_len]
         txts_train = txts[:si] + txts[si + split_len:]
-        seqs_train = compile_seqs(txts_train,seq_len)
-        seqs_val = compile_seqs(txts_val,seq_len)
+        seqs_train = compile_seqs(txts_train)
+        seqs_val = compile_seqs(txts_val)
 
         res.append((seqs_train,seqs_val))
 
@@ -92,23 +57,29 @@ def create_splits(txts,seq_len,n_splits):
 def reverse_seqs(seqs):
     return np.flip(seqs,(0,1))
 
-def create_seqs_splits(txts,seqs_len,n_splits):
-    return create_splits(txts,seqs_len,n_splits)
+def create_seqs_splits(txts,n_splits):
+    return create_splits(txts,n_splits)
 
-def create_seqs(txts,seqs_len):
-    return compile_seqs(txts,seqs_len)
+def create_seqs(txts):
+    return compile_seqs(txts)
 
 def create_vocab(txts):
     ts = [x for xs in txts for x in xs]
 
-    vocab = list(set(ts)) + [tok_pad]
+    vocab = list(set(ts)) + [toks[k] for k in toks]
     vocab.sort()
     vocab_size = len(vocab)
 
     word2id = {vocab[i] : i for i in range(vocab_size)}
     id2word = vocab
 
-    return vocab,vocab_size,word2id,id2word
+    retval = { "vocab"    : vocab
+             , "size"     : vocab_size
+             , "word2id"  : word2id
+             , "id2word"  : id2word
+             }
+
+    return retval
 
 if __name__ == "__main__":
     a1 = [range(i,i+3) for i in range(0,10,3)]
