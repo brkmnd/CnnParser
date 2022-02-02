@@ -5,6 +5,45 @@ import torch.optim as optim
 
 models_path = "models/"
 
+model_dict = {
+          "m1": {
+              "lstm_dim":1024
+            , "n_layers":1
+            , "emb_dim":128
+            , "model_name":"cnn_model1"
+            , "batch_size":1
+            , "dropout":0
+            , "bi-directional":False
+            }
+        , "m2": {
+              "lstm_dim":256
+            , "n_layers":2
+            , "emb_dim":128
+            , "model_name":"cnn_model2"
+            , "batch_size":1
+            , "dropout":0.2
+            , "bi-directional":False
+            }
+        , "m3": {
+              "lstm_dim":100
+            , "n_layers":2
+            , "emb_dim":128
+            , "model_name":"cnn_model3"
+            , "batch_size":1
+            , "dropout":0.1
+            , "bi-directional":True
+            }
+        , "m4": {
+              "lstm_dim":256
+            , "n_layers":2
+            , "emb_dim":128
+            , "model_name":"cnn_model4"
+            , "batch_size":1
+            , "dropout":0.2
+            , "bi-directional":False
+            }
+        }
+
 class CnnLstm(nn.Module):
     def __init__(self,vocab_size,model_data):
         super(CnnLstm,self).__init__()

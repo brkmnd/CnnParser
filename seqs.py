@@ -85,8 +85,9 @@ def create_vocab(txts):
 
     retval = { "vocab"    : vocab
              , "size"     : vocab_size
-             , "word2id"  : word2id
-             , "id2word"  : id2word
+             , "word2id"  : word2id_fun
+             , "id2word"  : id2word_fun
+             , "in-vocab" : lambda x: x in vocab
              }
 
     return retval
