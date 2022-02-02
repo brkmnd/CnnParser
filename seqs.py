@@ -73,6 +73,16 @@ def create_vocab(txts):
     word2id = {vocab[i] : i for i in range(vocab_size)}
     id2word = vocab
 
+    def word2id_fun(w):
+        if w not in word2id:
+            return word2id[toks["unk"]]
+        return word2id[w]
+    
+    def id2word_fun(i):
+        if i >= vocab_size:
+            return toks["unk"]
+        return id2word[i]
+
     retval = { "vocab"    : vocab
              , "size"     : vocab_size
              , "word2id"  : word2id
