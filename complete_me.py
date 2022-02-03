@@ -12,13 +12,13 @@ def main_loop():
     prg = []
 
     txts = load_data()
-    m0 = model_dict["m4"]
+    m0 = model_dict["m5"]
     vocab = create_vocab(txts)
     model = get_model(True,m0,vocab,device)
     sugs = []
     
     while answ not in answ_quit:
-
+        print("")
         print("-- current program:")
         print(" ".join(prg))
         print("")
@@ -31,16 +31,26 @@ def main_loop():
                 print(s0 + " : " + sugs[s0])
         print("")
 
-        answ = input("write next token (:q for quit, :n for suggestion nr n) : ")
-        if answ[0] == ":" and answ[1] in sugs:
-            answ = sugs[answ[1]]
+        print("(:q for quit, :n for suggestion n, :r for reset, :b for backspace)")
+        answ = input("write next token : ")
+        if answ[0] == ":":
+            c = answ[1:]
+            if c in sugs:
+                answ = sugs[c]
+            elif c == "r":
+                prg = []
+                continue
+            elif c == "b":
+                prg = prg[:-1]
+                continue
+            else:
+                print("command :" + c + " not recognized")
+                continue
         elif not vocab["in-vocab"](answ) and answ not in answ_quit:
             print("token not recognized '" + answ + "'")
-            print("")
             continue
     
         prg.append(answ)
-        print("")
 
 if __name__ == "__main__":
     main_loop()

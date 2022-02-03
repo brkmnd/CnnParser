@@ -33,11 +33,20 @@ model_dict = {
             , "dropout":0.1
             , "bi-directional":True
             }
-        , "m4": {
+        , "m4": { # did not include '=' token
               "lstm_dim":256
             , "n_layers":2
             , "emb_dim":128
             , "model_name":"cnn_model4"
+            , "batch_size":1
+            , "dropout":0.2
+            , "bi-directional":False
+            }
+        , "m5": {
+              "lstm_dim":256
+            , "n_layers":2
+            , "emb_dim":128
+            , "model_name":"cnn_model5"
             , "batch_size":1
             , "dropout":0.2
             , "bi-directional":False

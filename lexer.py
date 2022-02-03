@@ -18,6 +18,7 @@ c_specchars = [
         , ":"
         , ";"
         , "?"
+        , "="
         ]
 c_keyword_list = [
         # https://gcc.gnu.org/onlinedocs/gcc/Keyword-Index.html
@@ -98,6 +99,8 @@ def read_file(fpath):
     return res
 
 def remove_multline_comm(txt):
+    # nested comments are (thankfully) not allowed by gcc
+    # checked with own gcc compiler
     comm_on = False
     res = ""
     i = 0

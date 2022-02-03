@@ -201,11 +201,13 @@ def main_evaltest(model,m0,vocab,seqs_test):
 
 def main():
     txts = load_data()
-    txts_train = txts[:150]
-    txts_test = txts[150:]
+    txts_len = len(txts)
+    txts_split = round(round(txts_len * 0.8,-1))
+    txts_train = txts[:txts_split]
+    txts_test = txts[txts_split:]
 
-    m0 = model_dict["m4"]
-    load_model = True
+    m0 = model_dict["m5"]
+    load_model = False
 
     n_splits = 10
     n_datas = len(txts)
@@ -230,6 +232,7 @@ def main():
                 + "  1) train model for " + str(n_splits) + " splits\n"
                 + "  2) evaluate model on train splits\n"
                 + "  3) test model on test set\n"
+                + "  a) abort\n"
                 )
 
     answ = input(input_msg)
@@ -246,6 +249,8 @@ def main():
         main_evalsplit(model,m0,vocab,seqs)
     elif answ == "3":
         main_evaltest(model,m0,vocab,seqs_test)
+    elif answ == "a":
+        print("aborted")
     else:
         print("did not understand choice")
 
