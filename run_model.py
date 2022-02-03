@@ -32,6 +32,7 @@ def train_model(t_data,model,l_rate,b_size,word2id,device):
     est_time_n = 0
     avg_acc = 0
     avg_acc3 = 0
+    est_time_limit = round(n * 0.2)
 
     for epoch in range(n_epochs):
         avg_loss = []
@@ -57,8 +58,8 @@ def train_model(t_data,model,l_rate,b_size,word2id,device):
             optimizer.step()
 
             est_time_n += 1
-            if est_time_n == 1000:
-                print("est-time per epoch: " + comp_time(start_time,lambda t0 : t0 * n / 1000))
+            if est_time_n == est_time_limit:
+                print("est-time per epoch: " + comp_time(start_time,lambda t0 : t0 * n / est_time_limit))
                 print("")
 
         acc,_  = eval_model(model,b_size,seqs_val,1,word2id,device)
@@ -70,7 +71,7 @@ def train_model(t_data,model,l_rate,b_size,word2id,device):
         print("accuracy [" + str(epoch) + "] : " + str(acc))
         print("accuracy3[" + str(epoch) + "] : " + str(acc3))
         print("loss [" + str(epoch) + "]     : " + str(avg_loss.mean()))
-        print("----took " + comp_time(start_time,lambda x: x))
+        print("----took " + comp_time(start_time,None))
 
     return model,avg_acc / n_epochs,avg_acc3 / n_epochs
 
@@ -153,7 +154,7 @@ def main_train(model,m0,vocab,seqs,n_epochs=1,l_rate=1 / 10 ** 6):
     print("")
     print("**avg accuracy     : " + str(round(100 * avg_acc,2)) + "%")
     print("**avg accuracy3    : " + str(round(100 * avg_acc3,2)) + "%")
-    print("**total time taken : " + comp_time(start_time,lambda x: x))
+    print("**total time taken : " + comp_time(start_time,None))
     if model_name != None:
         save_model(model_name,model)
         save_acc(model_name,n_epochs,avg_acc,avg_acc3)
@@ -207,7 +208,7 @@ def main():
     txts_test = txts[txts_split:]
 
     m0 = model_dict["m5"]
-    load_model = False
+    load_model = True
 
     n_splits = 10
     n_datas = len(txts)

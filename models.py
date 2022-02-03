@@ -33,6 +33,7 @@ model_dict = {
             , "dropout":0.1
             , "bi-directional":True
             }
+        # above models are absolete
         , "m4": { # did not include '=' token
               "lstm_dim":256
             , "n_layers":2
