@@ -43,6 +43,8 @@ def main_loop():
             elif c == "b":
                 prg = prg[:-1]
                 continue
+            elif (":" + c) in answ_quit:
+                break
             else:
                 print("command :" + c + " not recognized")
                 continue

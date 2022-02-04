@@ -1,0 +1,223 @@
+has cuda
+model loaded from cnn_model5.ptm
+
+-- current program:
+
+
+-- suggestions:
+0 : #include
+1 : static
+2 : #undef
+3 : #if
+4 : const
+
+(:q for quit, :n for suggestion n, :r for reset, :b for backspace)
+write next token : int
+
+-- current program:
+int
+
+-- suggestions:
+0 : @ident
+1 : {
+2 : (
+3 : const
+4 : static
+
+(:q for quit, :n for suggestion n, :r for reset, :b for backspace)
+write next token : :0
+
+-- current program:
+int @ident
+
+-- suggestions:
+0 : =
+1 : (
+2 : ;
+3 : @ident
+4 : [
+
+(:q for quit, :n for suggestion n, :r for reset, :b for backspace)
+write next token : :1
+
+-- current program:
+int @ident (
+
+-- suggestions:
+0 : @ident
+1 : struct
+2 : void
+3 : const
+4 : )
+
+(:q for quit, :n for suggestion n, :r for reset, :b for backspace)
+write next token : :1    
+
+-- current program:
+int @ident ( struct
+
+-- suggestions:
+0 : @ident
+1 : struct
+2 : )
+3 : const
+4 : {
+
+(:q for quit, :n for suggestion n, :r for reset, :b for backspace)
+write next token : :0
+
+-- current program:
+int @ident ( struct @ident
+
+-- suggestions:
+0 : @ident
+1 : ,
+2 : @num
+3 : (
+4 : )
+
+(:q for quit, :n for suggestion n, :r for reset, :b for backspace)
+write next token : )
+
+-- current program:
+int @ident ( struct @ident )
+
+-- suggestions:
+0 : {
+1 : @ident
+2 : ;
+3 : return
+4 : #define
+
+(:q for quit, :n for suggestion n, :r for reset, :b for backspace)
+write next token : :0 
+
+-- current program:
+int @ident ( struct @ident ) {
+
+-- suggestions:
+0 : @ident
+1 : if
+2 : return
+3 : int
+4 : const
+
+(:q for quit, :n for suggestion n, :r for reset, :b for backspace)
+write next token : int
+
+-- current program:
+int @ident ( struct @ident ) { int
+
+-- suggestions:
+0 : @ident
+1 : ;
+2 : (
+3 : {
+4 : @num
+
+(:q for quit, :n for suggestion n, :r for reset, :b for backspace)
+write next token : :0
+
+-- current program:
+int @ident ( struct @ident ) { int @ident
+
+-- suggestions:
+0 : ;
+1 : =
+2 : ,
+3 : @ident
+4 : [
+
+(:q for quit, :n for suggestion n, :r for reset, :b for backspace)
+write next token : :1
+
+-- current program:
+int @ident ( struct @ident ) { int @ident =
+
+-- suggestions:
+0 : @ident
+1 : @num
+2 : (
+3 : {
+4 : &
+
+(:q for quit, :n for suggestion n, :r for reset, :b for backspace)
+write next token : :1
+
+-- current program:
+int @ident ( struct @ident ) { int @ident = @num
+
+-- suggestions:
+0 : ;
+1 : @ident
+2 : (
+3 : ,
+4 : )
+
+(:q for quit, :n for suggestion n, :r for reset, :b for backspace)
+write next token : :0
+
+-- current program:
+int @ident ( struct @ident ) { int @ident = @num ;
+
+-- suggestions:
+0 : @ident
+1 : if
+2 : }
+3 : return
+4 : #endif
+
+(:q for quit, :n for suggestion n, :r for reset, :b for backspace)
+write next token : :3
+
+-- current program:
+int @ident ( struct @ident ) { int @ident = @num ; return
+
+-- suggestions:
+0 : @ident
+1 : ;
+2 : @num
+3 : {
+4 : @string
+
+(:q for quit, :n for suggestion n, :r for reset, :b for backspace)
+write next token : :0
+
+-- current program:
+int @ident ( struct @ident ) { int @ident = @num ; return @ident
+
+-- suggestions:
+0 : ;
+1 : (
+2 : @ident
+3 : [
+4 : @num
+
+(:q for quit, :n for suggestion n, :r for reset, :b for backspace)
+write next token : :0
+
+-- current program:
+int @ident ( struct @ident ) { int @ident = @num ; return @ident ;
+
+-- suggestions:
+0 : }
+1 : @ident
+2 : #endif
+3 : if
+4 : return
+
+(:q for quit, :n for suggestion n, :r for reset, :b for backspace)
+write next token : :0
+
+-- current program:
+int @ident ( struct @ident ) { int @ident = @num ; return @ident ; }
+
+-- suggestions:
+0 : static
+1 : #undef
+2 : @ident
+3 : void
+4 : bool
+
+(:q for quit, :n for suggestion n, :r for reset, :b for backspace)
+write next token : 
