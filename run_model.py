@@ -29,10 +29,11 @@ def train_model(t_data,model,l_rate,b_size,word2id,device):
 
     xs,ys = seqs_train[0],seqs_train[1]
     n = len(xs)
-    est_time_n = 0
+    n_toks = sum([len(x) for x in xs])
     avg_acc = 0
     avg_acc3 = 0
-    est_time_limit = round(n * 0.2)
+    est_time_n = -1
+    est_time_limit = round(n_toks * 0.1)
 
     for epoch in range(n_epochs):
         avg_loss = []
@@ -44,6 +45,7 @@ def train_model(t_data,model,l_rate,b_size,word2id,device):
             model.zero_grad()
             # reset hiddens after each input since input = whole c-program
             hiddens = model.init_hiddens(b_size,device)
+            x_len = len(xs)
 
             inputs = concat_tokens(inputs,word2id,device)
             targets = concat_tokens(targets,word2id,device)
@@ -56,10 +58,12 @@ def train_model(t_data,model,l_rate,b_size,word2id,device):
 
             loss.backward()
             optimizer.step()
-
-            est_time_n += 1
-            if est_time_n == est_time_limit:
-                print("est-time per epoch: " + comp_time(start_time,lambda t0 : t0 * n / est_time_limit))
+        
+            if est_time_n >= 0:
+                est_time_n += x_len
+            if est_time_n >= est_time_limit:
+                est_time_n = -1
+                print("est-time per epoch: " + comp_time(start_time,lambda t0 : t0 * n_toks / est_time_n))
                 print("")
 
         acc,_  = eval_model(model,b_size,seqs_val,1,word2id,device)
