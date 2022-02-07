@@ -32,8 +32,8 @@ def train_model(t_data,model,l_rate,b_size,word2id,device):
     n_toks = sum([len(x) for x in xs])
     avg_acc = 0
     avg_acc3 = 0
-    est_time_n = -1
-    est_time_limit = round(n_toks * 0.1)
+    est_time_n = 0
+    est_time_limit = round(n_toks * 0.15)
 
     for epoch in range(n_epochs):
         avg_loss = []
@@ -62,9 +62,9 @@ def train_model(t_data,model,l_rate,b_size,word2id,device):
             if est_time_n >= 0:
                 est_time_n += x_len
             if est_time_n >= est_time_limit:
-                est_time_n = -1
                 print("est-time per epoch: " + comp_time(start_time,lambda t0 : t0 * n_toks / est_time_n))
                 print("")
+                est_time_n = -1
 
         acc,_  = eval_model(model,b_size,seqs_val,1,word2id,device)
         acc3,_ = eval_model(model,b_size,seqs_val,3,word2id,device)
