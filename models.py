@@ -95,7 +95,9 @@ def get_model(load_model,model_data,vocab,device):
     model = CnnLstm(vocab["size"],model_data)
     if load_model:
         model_name += ".ptm"
-        model.load_state_dict(ts.load(models_path + model_name))
+        model.load_state_dict( ts.load( models_path + model_name
+                             , map_location=ts.device(device))
+                             )
         print("model loaded from " + model_name)
     model.to(device)
     return model
